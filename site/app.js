@@ -135,6 +135,25 @@
     });
   });
 
+  // The demo video plays muted while it is on screen. It does not play by
+  // itself for reduced motion, or after the visitor pauses it.
+  var video = document.querySelector("video[data-autoplay]");
+  if (video && !reduce && "IntersectionObserver" in window) {
+    var ours = false, userPaused = false;
+    video.addEventListener("pause", function () { if (!ours) userPaused = true; ours = false; });
+    video.addEventListener("play", function () { userPaused = false; });
+    new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting && !userPaused) {
+          video.play().catch(function () {});
+        } else if (!entry.isIntersecting && !video.paused) {
+          ours = true;
+          video.pause();
+        }
+      });
+    }, { threshold: 0.5 }).observe(video);
+  }
+
   // The step rail follows the reader.
   var links = Array.prototype.slice.call(document.querySelectorAll(".rail a"));
   var progress = document.querySelector(".rail-progress");

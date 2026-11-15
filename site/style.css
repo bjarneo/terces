@@ -221,6 +221,19 @@ mark.kw { background: var(--hit-bg); color: var(--hit-ink); border-radius: 3px; 
 .demo-foot .btn { flex: none; }
 .note { margin: 0; font-size: 13px; color: var(--muted); }
 
+/* Demo video */
+
+.demo { padding-block: clamp(56px, 9vh, 104px) 0; border-top: 1px solid var(--line); }
+.video {
+  margin: 0; border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden;
+  box-shadow: var(--shadow); background: var(--panel);
+}
+.video video { display: block; width: 100%; height: auto; }
+.visually-hidden {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}
+
 /* Journey */
 
 .journey { padding-block: clamp(56px, 9vh, 112px); border-top: 1px solid var(--line); }
