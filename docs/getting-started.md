@@ -9,13 +9,19 @@ This page takes you from source code to your first scan. You need no GitHub App 
 
 ## Install a release
 
-Each release has binaries for macOS and Linux on amd64 and arm64. The install script picks the archive for your machine, checks it against `SHA256SUMS` and installs it to `~/.local/bin`:
+Each release has binaries for macOS and Linux on amd64 and arm64. The install script picks the archive for your machine, checks it against `SHA256SUMS` and installs it to `/usr/local/bin`:
 
 ```bash
 curl -sSfL https://bjarneo.github.io/terces/install.sh | sh
 ```
 
-To install to another directory, set `TERCES_INSTALL_DIR`. Read the script first if you prefer: it is `site/install.sh` in the repository.
+The script asks for `sudo` only when `/usr/local/bin` is not writable. Without `/usr/local/bin`, or without `sudo`, it installs to `~/.local/bin`. To install to another directory, set `TERCES_INSTALL_DIR`:
+
+```bash
+curl -sSfL https://bjarneo.github.io/terces/install.sh | TERCES_INSTALL_DIR=~/bin sh
+```
+
+ Read the script first if you prefer: it is `site/install.sh` in the repository.
 
 To download the archive by hand instead, run:
 

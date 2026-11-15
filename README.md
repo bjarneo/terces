@@ -13,7 +13,7 @@ Website: https://bjarneo.github.io/terces/
 
 ## Quick start
 
-Install the binary for macOS or Linux. The script checks the archive against `SHA256SUMS` and installs to `~/.local/bin`:
+Install the binary for macOS or Linux. The script checks the archive against `SHA256SUMS` and installs to `/usr/local/bin`. It asks for `sudo` only when that directory is not writable:
 
 ```bash
 curl -sSfL https://bjarneo.github.io/terces/install.sh | sh

@@ -4,11 +4,13 @@
 #   curl -sSfL https://bjarneo.github.io/terces/install.sh | sh
 #
 # The script checks the archive against SHA256SUMS before it installs.
+# It installs to /usr/local/bin, which is on the PATH by default, and asks
+# for sudo only when that directory is not writable. Without
+# /usr/local/bin, or without sudo, it installs to ~/.local/bin.
 # Set TERCES_INSTALL_DIR to install to another directory.
 set -eu
 
 repo="bjarneo/terces"
-dir="${TERCES_INSTALL_DIR:-$HOME/.local/bin}"
 
 os=$(uname -s | tr '[:upper:]' '[:lower:]')
 case "$os" in
@@ -42,9 +44,33 @@ if [ -z "$expected" ] || [ "$expected" != "$actual" ]; then
 fi
 
 tar -xzf "$tmp/$name" -C "$tmp" terces
-mkdir -p "$dir"
-mv "$tmp/terces" "$dir/terces"
-chmod 0755 "$dir/terces"
+chmod 0755 "$tmp/terces"
+
+# install_to moves the binary into a directory. It uses sudo only when
+# the directory is not writable.
+install_to() {
+	if [ -w "$1" ]; then
+		mv "$tmp/terces" "$1/terces"
+	elif command -v sudo > /dev/null 2>&1; then
+		echo "Installing to $1 needs sudo."
+		sudo mv "$tmp/terces" "$1/terces"
+	else
+		return 1
+	fi
+}
+
+if [ -n "${TERCES_INSTALL_DIR:-}" ]; then
+	dir=$TERCES_INSTALL_DIR
+	mkdir -p "$dir"
+	install_to "$dir"
+elif [ -d /usr/local/bin ] && install_to /usr/local/bin; then
+	dir=/usr/local/bin
+else
+	dir="$HOME/.local/bin"
+	[ -d /usr/local/bin ] && echo "Could not install to /usr/local/bin. Installing to $dir."
+	mkdir -p "$dir"
+	mv "$tmp/terces" "$dir/terces"
+fi
 echo "Installed $("$dir/terces" --version) to $dir/terces"
 case ":$PATH:" in
 *":$dir:"*) ;;

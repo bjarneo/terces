@@ -424,7 +424,7 @@ Scan: 1 blob listed, 1 scanned, 0 cached, 0 skipped (path 0, size 0, binary 0), 
       <div class="cmd" data-copy><code><span class="prompt" aria-hidden="true">$ </span>git clone --mirror https://github.com/my-org/my-repo.git &amp;&amp; terces scan history --git-dir my-repo.git --format html &gt; report.html</code><button type="button" class="copy" aria-label="Copy the command"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2.5"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg></button></div>
     </li>
   </ol>
-  <p class="aside-q">The script checks the archive against <code>SHA256SUMS</code> and installs to <code>~/.local/bin</code>. To build from source instead, run <code>git clone https://github.com/bjarneo/terces &amp;&amp; cd terces &amp;&amp; make build</code>. It needs Go 1.25 or later. <a href="https://github.com/bjarneo/terces/releases">All releases</a>.</p>
+  <p class="aside-q">The script checks the archive against <code>SHA256SUMS</code> and installs to <code>/usr/local/bin</code>, with <code>sudo</code> only when that directory is not writable. To build from source instead, run <code>git clone https://github.com/bjarneo/terces &amp;&amp; cd terces &amp;&amp; make build</code>. It needs Go 1.25 or later. <a href="https://github.com/bjarneo/terces/releases">All releases</a>.</p>
   <div class="next">
     <a class="next-link" href="https://github.com/bjarneo/terces/blob/main/docs/server-setup.md">
       <strong>Run the server for your orgs <svg class="next-arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></strong>
