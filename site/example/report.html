@@ -1,0 +1,286 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline'">
+<meta name="referrer" content="no-referrer">
+<title>terces scan: acme-payments</title>
+<style>
+:root {
+  --bg: #f7f7f5;
+  --panel: #ffffff;
+  --text: #1d1d1b;
+  --muted: #6b6b66;
+  --line: #e2e2dc;
+  --accent: #2f5d50;
+  --code-bg: #f0f0ec;
+  --critical: #a4161a;
+  --high: #c2410c;
+  --medium: #b08900;
+  --low: #5c7080;
+  --shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #141413;
+    --panel: #1d1d1b;
+    --text: #ecece6;
+    --muted: #9a9a92;
+    --line: #33332f;
+    --accent: #7fb7a4;
+    --code-bg: #262623;
+    --critical: #ff6b6b;
+    --high: #ff922b;
+    --medium: #ffd43b;
+    --low: #a5b4c3;
+    --shadow: none;
+  }
+  .sev.sev { color: #141413; }
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font: 15px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+main { max-width: 1280px; margin: 0 auto; padding: 32px 16px 64px; }
+header h1 { margin: 0; font-size: 26px; letter-spacing: -0.01em; }
+header p { margin: 4px 0 0; color: var(--muted); }
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin: 24px 0; }
+.card {
+  background: var(--panel); border: 1px solid var(--line); border-radius: 10px;
+  padding: 14px 16px; box-shadow: var(--shadow);
+}
+.card .n { font-size: 28px; font-weight: 650; font-variant-numeric: tabular-nums; }
+.card .k { color: var(--muted); font-size: 13px; text-transform: uppercase; letter-spacing: 0.04em; }
+.card.critical .n { color: var(--critical); }
+.card.high .n { color: var(--high); }
+.card.medium .n { color: var(--medium); }
+.card.low .n { color: var(--low); }
+.breakdowns { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 12px; margin: 0 0 24px; }
+.breakdowns h3 { margin: 0; padding: 10px 12px; font-size: 13px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--muted); border-bottom: 1px solid var(--line); }
+.bar { height: 6px; border-radius: 3px; background: var(--accent); opacity: 0.7; margin-top: 4px; }
+.notice {
+  background: color-mix(in srgb, var(--high) 8%, var(--panel)); border: 1px solid color-mix(in srgb, var(--high) 45%, var(--line));
+  border-radius: 8px; padding: 10px 14px; margin: 12px 0;
+}
+.toolbar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 20px 0 12px; }
+.toolbar input[type=search] {
+  flex: 1 1 260px; min-width: 0; padding: 8px 12px; border-radius: 8px;
+  border: 1px solid var(--line); background: var(--panel); color: var(--text); font: inherit;
+}
+.toolbar button {
+  padding: 7px 12px; border-radius: 999px; border: 1px solid var(--line);
+  background: var(--panel); color: var(--text); font: inherit; font-size: 13px; cursor: pointer;
+}
+.toolbar button[aria-pressed=false] { opacity: 0.45; }
+#filters { display: inline-flex; flex-wrap: wrap; gap: 6px; }
+.toolbar .count { color: var(--muted); font-size: 13px; margin-left: auto; }
+.wrap { overflow-x: auto; background: var(--panel); border: 1px solid var(--line); border-radius: 10px; box-shadow: var(--shadow); }
+table { width: 100%; border-collapse: collapse; }
+th, td { text-align: left; padding: 9px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+tr:last-child td { border-bottom: 0; }
+th {
+  position: sticky; top: 0; background: var(--panel); font-size: 12px; text-transform: uppercase;
+  letter-spacing: 0.04em; color: var(--muted); cursor: pointer; user-select: none; white-space: nowrap;
+}
+th[aria-sort]::after {
+  content: ""; display: inline-block; margin-left: 6px; vertical-align: 2px;
+  border: 4px solid transparent;
+}
+th[aria-sort=ascending]::after { border-bottom-color: currentColor; border-top-width: 0; }
+th[aria-sort=descending]::after { border-top-color: currentColor; border-bottom-width: 0; }
+td.code { font: 13px/1.45 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; white-space: nowrap; }
+td.code span { background: var(--code-bg); border-radius: 4px; padding: 1px 5px; }
+td.number { font-variant-numeric: tabular-nums; text-align: right; }
+.sev { display: inline-block; padding: 1px 9px; border-radius: 999px; font-size: 12px; font-weight: 600; color: #fff; }
+.sev.critical { background: var(--critical); }
+.sev.high { background: var(--high); }
+.sev.medium { background: var(--medium); color: #1d1d1b; }
+.sev.low { background: var(--low); }
+.empty { padding: 28px; text-align: center; color: var(--muted); }
+h2 { font-size: 18px; margin: 36px 0 8px; }
+footer { margin-top: 40px; color: var(--muted); font-size: 13px; }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <h1 id="title"></h1>
+    <p id="subtitle"></p>
+  </header>
+  <section class="cards" id="cards"></section>
+  <section class="breakdowns" id="breakdowns"></section>
+  <div id="notices"></div>
+  <div id="main-table">
+  <div class="toolbar">
+    <input type="search" id="search" placeholder="Filter rows" aria-label="Filter rows">
+    <span id="filters"></span>
+    <span class="count" id="count"></span>
+  </div>
+  <div class="wrap"><table id="rows"></table></div>
+  </div>
+  <div id="gaps"></div>
+  <footer id="footer"></footer>
+</main>
+<script type="application/json" id="data">{"title":"terces scan: acme-payments","subtitle":"5 findings, 5 different secrets. Each finding can be a live secret. Revoke it first, then remove it from the code.","footer":"Scan: 6 blobs listed, 6 scanned, 0 cached, 0 skipped (path 0, size 0, binary 0), 1527 blobs/s, prefilter hit rate 83.3%, 4ms. Generated by terces at 2026-11-15 14:32 UTC. The report holds previews and fingerprints, never a full secret.","empty":"No findings.","cards":[{"label":"findings","value":5},{"label":"secrets","value":5},{"label":"critical","value":1,"kind":"critical"},{"label":"high","value":3,"kind":"high"},{"label":"medium","value":1,"kind":"medium"},{"label":"low","value":0,"kind":"low"}],"breakdowns":[{"title":"Top rules","rows":[{"name":"aws-access-key-id","count":1},{"name":"aws-secret-access-key","count":1},{"name":"generic-api-key","count":1},{"name":"github-pat","count":1},{"name":"slack-bot-token","count":1}]},{"title":"Top repositories","rows":[]}],"notices":null,"columns":[{"name":"Severity","kind":"severity"},{"name":"Rule","kind":"code"},{"name":"Preview","kind":"code"},{"name":"Location","kind":"code"},{"name":"Commit","kind":"code"},{"name":"Introduced","kind":"text"},{"name":"Fingerprint","kind":"code"}],"rows":[["critical","aws-secret-access-key","sHkM… (40)","deploy/credentials:3","3638762775c8","2026-04-11","de1f7504825b"],["high","github-pat","ghp_… (40)","config/app.env:1","63e77ecd722a","2026-11-14","322051b8ad01"],["high","slack-bot-token","xoxb… (55)","config/slack.env:1","957eaae09e9e","2026-09-08","19c6d0d4588d"],["high","aws-access-key-id","AKIA… (20)","deploy/credentials:2","3638762775c8","2026-04-11","0bfeba2b4b6b"],["medium","generic-api-key","gDbK… (40)","src/client.js:3","b6994b5effd1","2026-06-23","d01387cd2422"]],"summaryOnly":false}</script>
+<script>
+"use strict";
+(function () {
+  // The data is untrusted repository content. Show it only with textContent.
+  var data = JSON.parse(document.getElementById("data").textContent);
+  var order = { critical: 4, high: 3, medium: 2, low: 1 };
+  var cols = data.columns || [];
+  var rows = data.rows || [];
+  var sevCol = -1;
+  cols.forEach(function (c, i) { if (c.kind === "severity" && sevCol < 0) sevCol = i; });
+  var shown = { critical: true, high: true, medium: true, low: true };
+  var sortCol = sevCol, sortDir = -1, query = "";
+
+  function el(tag, cls, text) {
+    var e = document.createElement(tag);
+    if (cls) e.className = cls;
+    if (text !== undefined) e.textContent = text;
+    return e;
+  }
+
+  document.title = data.title;
+  document.getElementById("title").textContent = data.title;
+  document.getElementById("subtitle").textContent = data.subtitle || "";
+  document.getElementById("footer").textContent = data.footer || "";
+
+  var cards = document.getElementById("cards");
+  function card(cls, n, k) {
+    var c = el("div", "card " + cls);
+    c.appendChild(el("div", "n", String(n)));
+    c.appendChild(el("div", "k", k));
+    cards.appendChild(c);
+  }
+  (data.cards || []).forEach(function (c) { card(c.kind || "", c.value, c.label); });
+
+  var bd = document.getElementById("breakdowns");
+  (data.breakdowns || []).forEach(function (b) {
+    if (!b.rows || !b.rows.length) return;
+    var box = el("div", "wrap");
+    box.appendChild(el("h3", "", b.title));
+    var t = el("table"), tb = el("tbody");
+    var most = Math.max.apply(null, b.rows.map(function (r) { return r.count; }));
+    b.rows.forEach(function (r) {
+      var tr = el("tr"), name = el("td", "code");
+      name.appendChild(el("span", "", r.name));
+      var bar = el("div", "bar");
+      bar.style.width = Math.max(4, Math.round(100 * r.count / most)) + "%";
+      name.appendChild(bar);
+      tr.appendChild(name);
+      tr.appendChild(el("td", "number", String(r.count)));
+      tb.appendChild(tr);
+    });
+    t.appendChild(tb);
+    box.appendChild(t);
+    bd.appendChild(box);
+  });
+  if (data.summaryOnly) document.getElementById("main-table").hidden = true;
+
+  var notices = document.getElementById("notices");
+  (data.notices || []).forEach(function (n) { notices.appendChild(el("div", "notice", n)); });
+
+  var filters = document.getElementById("filters");
+  if (sevCol >= 0) {
+    ["critical", "high", "medium", "low"].forEach(function (s) {
+      var b = el("button", "", s);
+      b.type = "button";
+      b.setAttribute("aria-pressed", "true");
+      b.addEventListener("click", function () {
+        shown[s] = !shown[s];
+        b.setAttribute("aria-pressed", String(shown[s]));
+        draw();
+      });
+      filters.appendChild(b);
+    });
+  }
+  document.getElementById("search").addEventListener("input", function (e) {
+    query = e.target.value.toLowerCase();
+    draw();
+  });
+
+  function cmp(a, b) {
+    var kind = cols[sortCol] ? cols[sortCol].kind : "text";
+    var x = a[sortCol] || "", y = b[sortCol] || "";
+    if (kind === "severity") return ((order[x] || 0) - (order[y] || 0)) * sortDir;
+    if (kind === "number") return ((parseFloat(x) || 0) - (parseFloat(y) || 0)) * sortDir;
+    return x.localeCompare(y) * sortDir;
+  }
+
+  var table = document.getElementById("rows");
+  function draw() {
+    table.textContent = "";
+    var head = el("thead"), hr = el("tr");
+    cols.forEach(function (c, i) {
+      var th = el("th", "", c.name);
+      th.scope = "col";
+      if (i === sortCol) th.setAttribute("aria-sort", sortDir > 0 ? "ascending" : "descending");
+      th.addEventListener("click", function () {
+        if (sortCol === i) sortDir = -sortDir; else { sortCol = i; sortDir = c.kind === "text" || c.kind === "code" ? 1 : -1; }
+        draw();
+      });
+      hr.appendChild(th);
+    });
+    head.appendChild(hr);
+    table.appendChild(head);
+    var list = rows.filter(function (r) {
+      if (sevCol >= 0 && order[r[sevCol]] && !shown[r[sevCol]]) return false;
+      return !query || r.join(" ").toLowerCase().indexOf(query) >= 0;
+    });
+    if (sortCol >= 0) list.sort(cmp);
+    var body = el("tbody");
+    list.forEach(function (r) {
+      var tr = el("tr");
+      cols.forEach(function (c, i) {
+        var v = r[i] || "", td = el("td", c.kind);
+        if (c.kind === "severity" && v) td.appendChild(el("span", "sev " + v, v));
+        else if (c.kind === "code" && v) td.appendChild(el("span", "", v));
+        else td.textContent = v;
+        tr.appendChild(td);
+      });
+      body.appendChild(tr);
+    });
+    if (!list.length) {
+      var tr = el("tr"), td = el("td", "empty", rows.length ? "No rows match the filter." : (data.empty || "No rows."));
+      td.colSpan = Math.max(cols.length, 1);
+      tr.appendChild(td);
+      body.appendChild(tr);
+    }
+    table.appendChild(body);
+    document.getElementById("count").textContent = list.length + " of " + rows.length;
+  }
+  draw();
+  // The table exists only after draw, so scroll to a link target now.
+  if (location.hash) {
+    var target = document.getElementById(location.hash.slice(1));
+    if (target) target.scrollIntoView();
+  }
+
+  if (data.gaps && data.gaps.rows && data.gaps.rows.length) {
+    var g = document.getElementById("gaps");
+    g.appendChild(el("h2", "", data.gaps.title));
+    g.appendChild(el("p", "", data.gaps.text));
+    var wrap = el("div", "wrap"), t = el("table"), th = el("thead"), tr = el("tr");
+    data.gaps.columns.forEach(function (c) { tr.appendChild(el("th", "", c)); });
+    th.appendChild(tr);
+    t.appendChild(th);
+    var tb = el("tbody");
+    data.gaps.rows.forEach(function (r) {
+      var row = el("tr");
+      r.forEach(function (v, i) { row.appendChild(el("td", i < 2 ? "code" : "", v)); });
+      tb.appendChild(row);
+    });
+    t.appendChild(tb);
+    wrap.appendChild(t);
+    g.appendChild(wrap);
+  }
+})();
+</script>
+</body>
+</html>

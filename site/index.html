@@ -1,0 +1,468 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self'; style-src 'self'; script-src 'self'; base-uri 'none'; form-action 'none'">
+<meta name="referrer" content="no-referrer">
+<meta name="color-scheme" content="light dark">
+<title>terces: find leaked secrets in your GitHub orgs</title>
+<meta name="description" content="terces is a self-hosted secret scanner for GitHub organizations. It scans the full history of every repository, blocks new secrets in pull requests, and stores a fingerprint, never the secret.">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="style.css">
+<script src="app.js" defer></script>
+</head>
+<body>
+<a class="skip" href="#main">Skip to the content</a>
+
+<header class="top">
+  <div class="wrap top-row">
+    <a class="mark" href="./" aria-label="terces home">
+      <svg class="mark-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><path d="M8 9h8M8 12h5M8 15h8"/></svg>
+      <span class="mark-word">terces</span>
+    </a>
+    <nav aria-label="Main">
+      <a href="#journey">How it works</a>
+      <a href="#formats">Output</a>
+      <a href="#quick-start">Quick start</a>
+      <a href="https://github.com/bjarneo/terces/tree/main/docs">Docs</a>
+      <a class="nav-gh" href="https://github.com/bjarneo/terces">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5a9.5 9.5 0 0 0-3 18.5c.5.1.6-.2.6-.5v-1.7c-2.6.6-3.2-1.2-3.2-1.2-.4-1.1-1-1.4-1-1.4-.9-.6 0-.6 0-.6 1 .1 1.5 1 1.5 1 .9 1.5 2.3 1.1 2.8.8.1-.6.3-1.1.6-1.3-2.1-.2-4.3-1-4.3-4.7 0-1 .4-1.9 1-2.6-.1-.3-.4-1.2.1-2.5 0 0 .8-.3 2.6 1a9 9 0 0 1 4.8 0c1.8-1.3 2.6-1 2.6-1 .5 1.3.2 2.2.1 2.5.6.7 1 1.6 1 2.6 0 3.7-2.2 4.5-4.3 4.7.3.3.6.9.6 1.8v2.6c0 .3.2.6.7.5A9.5 9.5 0 0 0 12 2.5Z"/></svg>
+        GitHub
+      </a>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+
+<section class="hero wrap" aria-labelledby="hero-title">
+  <div class="hero-copy">
+    <h1 id="hero-title">Find every leaked secret in your GitHub orgs. Store none of them.</h1>
+    <p class="lead">terces scans the full history of every repository in your organizations, blocks new secrets in pull requests and keeps one list of findings in your own Postgres. It stores an HMAC fingerprint and a short preview. It never stores, prints or sends the secret.</p>
+    <div class="cmd" data-copy>
+      <code><span class="prompt" aria-hidden="true">$ </span>git clone https://github.com/bjarneo/terces &amp;&amp; cd terces &amp;&amp; make build</code>
+      <button type="button" class="copy" aria-label="Copy the command">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2.5"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg>
+      </button>
+    </div>
+    <div class="actions">
+      <a class="btn btn-primary" href="#quick-start">Run the quick start</a>
+      <a class="btn" href="example/report.html">Open the example report</a>
+    </div>
+    <p class="facts">One Go binary · MIT license · 222 rules · Build from source with Go 1.25</p>
+  </div>
+
+  <div class="hero-demo" aria-label="Example: a commit adds a token, and terces stores a fingerprint">
+    <figure class="panel diff">
+      <figcaption class="panel-head">
+        <span class="file">config/app.env</span>
+        <span class="muted">your fake token</span>
+      </figcaption>
+      <pre class="diff-body"><span class="ln">1</span><span class="add">+GITHUB_TOKEN=<mark class="kw">ghp_</mark><span data-token-tail>…</span></span>
+<span class="ln">2</span><span class="add">+REGION=eu-north-1</span></pre>
+    </figure>
+
+    <div class="hop" aria-hidden="true">
+      <span class="hop-line"></span>
+      <span class="hop-label">terces scan range main..feature/deploy-config</span>
+    </div>
+
+    <figure class="panel stored">
+      <figcaption class="panel-head">
+        <span class="label">What terces stores</span>
+        <span class="muted">secrets table</span>
+      </figcaption>
+      <dl class="row-dl">
+        <dt>rule</dt><dd><code>github-pat</code></dd>
+        <dt>severity</dt><dd><span class="sev sev-high">high</span></dd>
+        <dt>preview</dt><dd><code>ghp_… (40)</code></dd>
+        <dt>fingerprint</dt><dd><code class="fp" data-fp aria-live="polite">computing…</code></dd>
+        <dt>secret</dt><dd class="none">not stored</dd>
+      </dl>
+    </figure>
+
+    <div class="demo-foot">
+      <button type="button" class="btn btn-small" data-new-token>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.3-5.6"/><path d="M20 4v5h-5"/></svg>
+        New fake token
+      </button>
+      <p class="note">The token is fake. Your browser makes it at random and computes HMAC-SHA256 with a demo key. Nothing leaves this page.</p>
+    </div>
+  </div>
+</section>
+
+<section id="journey" class="journey wrap" aria-labelledby="journey-title">
+  <h2 id="journey-title" class="journey-title">Follow one token through terces</h2>
+  <p class="bridge">From here, the page follows the GitHub token in the example repository <code>acme-payments</code>. Its fingerprint comes from the key of the example scan, so it differs from the demo fingerprint above.</p>
+  <div class="journey-grid">
+    <div class="stepbar" aria-hidden="true"><span class="stepbar-count">Step 1 of 5</span> <span class="stepbar-title">The pull request check fails</span></div>
+    <nav class="rail" aria-label="Steps">
+      <ol>
+        <li><a href="#step-check">The pull request check fails</a></li>
+        <li><a href="#step-engine">The engine reads near the keyword</a></li>
+        <li><a href="#step-store">The store keeps a fingerprint</a></li>
+        <li><a href="#step-history">The history scan finds the rest</a></li>
+        <li><a href="#step-resolve">You revoke it and close it</a></li>
+      </ol>
+      <span class="rail-progress" aria-hidden="true"></span>
+    </nav>
+
+    <div class="steps">
+      <article id="step-check" class="step">
+        <h3>The pull request check fails</h3>
+        <p>The service scans the commits of each pull request and posts a check run named <code>terces</code>. When the commits add a secret, the check fails. Make the check required in a ruleset, and the pull request cannot merge.</p>
+        <div class="check" role="img" aria-label="A failed GitHub check: terces, 1 new secret">
+          <svg class="check-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9 9l6 6M15 9l-6 6"/></svg>
+          <span><strong>terces</strong> · 1 new secret in <code>config/app.env</code></span>
+          <span class="check-state">Required · Failed</span>
+        </div>
+        <figure class="term">
+          <figcaption><span class="prompt">$</span> terces scan range main..feature/deploy-config</figcaption>
+          <pre><code><!-- example:range -->SEVERITY  RULE        PREVIEW     LOCATION          COMMIT        FINGERPRINT
+high      github-pat  ghp_… (40)  config/app.env:1  63e77ecd722a  322051b8ad01
+
+Summary: 1 finding, 1 different secret.
+  Severity: 0 critical, 1 high, 0 medium, 0 low.
+  Top rules:
+    github-pat  1
+1 finding. 1 blob listed, 1 scanned, 0 cached, 0 skipped (path 0, size 0, binary 0), 53 blobs/s, prefilter hit rate 100.0%, 19ms<!-- /example:range --></code></pre>
+        </figure>
+        <p class="aside">Only new secrets fail the check. A secret that already exists on the base branch is not new. The check reads <code>.terces.yaml</code> from the base commit, so a pull request cannot ignore its own secret.</p>
+      </article>
+
+      <article id="step-engine" class="step">
+        <h3>The engine reads near the keyword</h3>
+        <p>One Aho-Corasick pass finds the keywords of all 222 rules in one read of the blob. A rule runs its regex only in a window around each keyword hit, sized from the longest match the regex can make. A rule that cannot prove its matches hold a keyword runs on the full blob.</p>
+        <div class="window" aria-label="A blob with one keyword hit. The regex runs only in the window around it.">
+          <div class="window-text"><span class="dim">region: eu-north-1   retries: 3   timeout_ms: 2500   log_level: info   cache_ttl: 300   </span><span class="win"><span class="pre-hit">GITHUB_TOKEN=</span><mark class="kw">ghp_</mark><span class="redact">36 characters</span></span><span class="dim">   feature_flags: checkout_v2   owner: payments</span></div>
+          <div class="window-scale">
+            <span class="dim-bar">not read by the regex</span>
+            <span class="win-bar">regex window</span>
+            <span class="dim-bar">not read by the regex</span>
+          </div>
+        </div>
+        <table class="mini">
+          <caption>Scan time with and without windows, measured on one laptop</caption>
+          <thead><tr><th scope="col">Input</th><th scope="col">Full blob</th><th scope="col">Windows</th></tr></thead>
+          <tbody>
+            <tr><th scope="row">3.7 MB JSON file, 18 keyword hits</th><td>7.1 s</td><td>0.3 s</td></tr>
+            <tr><th scope="row">gitleaks repository, full history</th><td>5.6 s</td><td>3.2 s</td></tr>
+          </tbody>
+        </table>
+        <p class="aside">The findings stayed the same on 196 repositories with 6,412 findings. A test checks the windows against a full scan for every built-in rule. <a href="https://github.com/bjarneo/terces/blob/main/docs/performance.md#regex-windows-give-the-same-findings">Read the method</a>.</p>
+      </article>
+
+      <article id="step-store" class="step">
+        <h3>The store keeps a fingerprint, not the secret</h3>
+        <p>terces computes <code>HMAC-SHA256(key, secret)</code> and a preview, then clears the plaintext from memory. One secret is one row, also when it occurs in many repositories. Each place is a location row.</p>
+        <div class="tables">
+          <figure class="panel">
+            <figcaption class="panel-head"><span class="file">secrets</span><span class="muted">1 row</span></figcaption>
+            <dl class="row-dl">
+              <dt>fingerprint</dt><dd><code class="fp"><!-- example:fp-full -->322051b8ad016dd09871d598995123832a57fc87119ae493b4d68efaa390b2b3<!-- /example:fp-full --></code></dd>
+              <dt>rule_id</dt><dd><code>github-pat</code></dd>
+              <dt>preview</dt><dd><code>ghp_… (40)</code></dd>
+              <dt>state</dt><dd><code>open</code></dd>
+            </dl>
+          </figure>
+          <figure class="panel">
+            <figcaption class="panel-head"><span class="file">locations</span><span class="muted">1 row</span></figcaption>
+            <dl class="row-dl">
+              <dt>repository</dt><dd><code>acme/payments</code></dd>
+              <dt>path</dt><dd><code>config/app.env</code></dd>
+              <dt>line</dt><dd><code>1</code></dd>
+              <dt>author</dt><dd><code>sam@example.com</code></dd>
+            </dl>
+          </figure>
+        </div>
+        <p class="aside">Logs, reports, Slack alerts and pull request annotations hold the preview only. The HMAC key stays on the server, so a fingerprint alone does not reveal the secret.</p>
+      </article>
+
+      <article id="step-history" class="step">
+        <h3>The history scan finds the rest</h3>
+        <p>A deleted file is still in the history. <code>terces scan history</code> reads every blob that any branch, tag or pull request ref reaches, one time per blob, and names the commit that added it. In this example repository, it finds 4 more secrets, among them AWS keys that a later commit removed.</p>
+        <figure class="term">
+          <figcaption><span class="prompt">$</span> terces scan history --git-dir acme-payments</figcaption>
+          <pre><code><!-- example:history -->SEVERITY  RULE                   PREVIEW     LOCATION              COMMIT        FINGERPRINT
+critical  aws-secret-access-key  sHkM… (40)  deploy/credentials:3  3638762775c8  de1f7504825b
+high      github-pat             ghp_… (40)  config/app.env:1      63e77ecd722a  322051b8ad01
+high      slack-bot-token        xoxb… (55)  config/slack.env:1    957eaae09e9e  19c6d0d4588d
+high      aws-access-key-id      AKIA… (20)  deploy/credentials:2  3638762775c8  0bfeba2b4b6b
+medium    generic-api-key        gDbK… (40)  src/client.js:3       b6994b5effd1  d01387cd2422
+
+Summary: 5 findings, 5 different secrets.
+  Severity: 1 critical, 3 high, 1 medium, 0 low.
+  Top rules:
+    aws-access-key-id      1
+    aws-secret-access-key  1
+    generic-api-key        1
+    github-pat             1
+    slack-bot-token        1
+5 findings. 6 blobs listed, 6 scanned, 0 cached, 0 skipped (path 0, size 0, binary 0), 576 blobs/s, prefilter hit rate 83.3%, 10ms<!-- /example:history --></code></pre>
+        </figure>
+        <figure class="shot">
+          <a href="example/report.html" aria-label="Open the live example report">
+            <picture>
+              <source srcset="assets/report-narrow-dark.webp" media="(max-width: 720px) and (prefers-color-scheme: dark)" width="420" height="269">
+              <source srcset="assets/report-narrow-light.webp" media="(max-width: 720px)" width="420" height="271">
+              <source srcset="assets/report-dark.webp" media="(prefers-color-scheme: dark)" width="1280" height="937">
+              <img src="assets/report-light.webp" width="1280" height="937" alt="The terces HTML report of the example repository: findings with severity pills, rules, previews and locations." loading="lazy">
+            </picture>
+          </a>
+          <figcaption>The same scan with <code>--format html</code>: one file, no network requests. <a href="example/report.html">Open the live example</a> to filter and sort it.</figcaption>
+        </figure>
+      </article>
+
+      <article id="step-resolve" class="step">
+        <h3>You revoke it and close it</h3>
+        <p>Revoke the token at its provider first. Then resolve the finding. The pull request check and the Slack alerts stop for that secret, and the audit log records who resolved it and with which database role.</p>
+        <figure class="term">
+          <figcaption><span class="prompt">$</span> terces findings resolve <!-- example:fp-short -->322051b8ad01<!-- /example:fp-short --> --state revoked --note "rotated in GitHub"</figcaption>
+          <pre><code><!-- example:resolve -->322051b8ad01 is now revoked<!-- /example:resolve --></code></pre>
+        </figure>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section id="formats" class="formats wrap" aria-labelledby="formats-title">
+  <div class="section-head">
+    <h2 id="formats-title">One scan, every format</h2>
+    <p>The same pull request scan in each output format. No format holds a full secret. Add <code>--summary</code> for the counts only.</p>
+  </div>
+  <div class="tabs" data-tabs>
+    <div class="tablist" role="tablist" aria-label="Output formats">
+      <button role="tab" id="tab-md" aria-controls="pane-md" aria-selected="true">Markdown</button>
+      <button role="tab" id="tab-sarif" aria-controls="pane-sarif" aria-selected="false" tabindex="-1">SARIF</button>
+      <button role="tab" id="tab-json" aria-controls="pane-json" aria-selected="false" tabindex="-1">JSON</button>
+      <button role="tab" id="tab-summary" aria-controls="pane-summary" aria-selected="false" tabindex="-1">Summary</button>
+    </div>
+    <div class="tabpanel" role="tabpanel" id="pane-md" aria-labelledby="tab-md" tabindex="0">
+      <p class="pane-cmd"><code>terces scan range main..feature/deploy-config --format markdown</code> · for pull request comments and wiki pages.</p>
+      <pre><code><!-- example:markdown -->## terces `main..feature/deploy-config`: 1 finding
+
+Each finding is a secret that can be live. Revoke it first, then remove it from the code.
+
+**1 finding, 1 different secret.** Severity: 0 critical, 1 high, 0 medium, 0 low.
+
+| Top rules | Findings |
+|---|---|
+| `github-pat` | 1 |
+
+| Severity | Rule | Preview | Location | Commit | Fingerprint |
+|---|---|---|---|---|---|
+| high | `github-pat` | `ghp_… (40)` | `config/app.env:1` | `63e77ecd722a` | `322051b8ad01` |
+
+Scan: 1 blob listed, 1 scanned, 0 cached, 0 skipped (path 0, size 0, binary 0), 97 blobs/s, prefilter hit rate 100.0%, 10ms<!-- /example:markdown --></code></pre>
+    </div>
+    <div class="tabpanel" role="tabpanel" id="pane-sarif" aria-labelledby="tab-sarif" tabindex="0" hidden>
+      <p class="pane-cmd"><code>terces scan path . --format sarif</code> · SARIF 2.1.0 for GitHub code scanning, with <code>security-severity</code> scores.</p>
+      <pre><code><!-- example:sarif -->{
+  "$schema": "https://json.schemastore.org/sarif-2.1.0.json",
+  "version": "2.1.0",
+  "runs": [
+    {
+      "tool": {
+        "driver": {
+          "name": "terces",
+          "version": "dev",
+          "rules": [
+            {
+              "id": "github-pat",
+              "shortDescription": {
+                "text": "Uncovered a GitHub Personal Access Token, potentially leading to unauthorized repository access and sensitive content exposure."
+              },
+              "help": {
+                "text": "Treat the secret as compromised. Revoke it at its provider first. Then remove it from the code, and use a secret manager."
+              },
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "properties": {
+                "security-severity": "8.0",
+                "tags": [
+                  "security",
+                  "secret"
+                ]
+              }
+            }
+          ]
+        }
+      },
+      "results": [
+        {
+          "ruleId": "github-pat",
+          "ruleIndex": 0,
+          "level": "error",
+          "message": {
+            "text": "Uncovered a GitHub Personal Access Token, potentially leading to unauthorized repository access and sensitive content exposure. Preview: ghp_… (40)."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "config/app.env",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "startLine": 1
+                }
+              }
+            }
+          ],
+          "partialFingerprints": {
+            "tercesFingerprint/v1": "322051b8ad016dd09871d598995123832a57fc87119ae493b4d68efaa390b2b3"
+          },
+          "properties": {
+            "commit": "63e77ecd722a21b8aad0d6cd513d2bd1984dc4ca"
+          }
+        }
+      ]
+    }
+  ]
+}<!-- /example:sarif --></code></pre>
+    </div>
+    <div class="tabpanel" role="tabpanel" id="pane-json" aria-labelledby="tab-json" tabindex="0" hidden>
+      <p class="pane-cmd"><code>terces scan range main..feature/deploy-config --format json</code> · for scripts and other tools.</p>
+      <pre><code><!-- example:json -->{
+  "findings": [
+    {
+      "fingerprint": "322051b8ad016dd09871d598995123832a57fc87119ae493b4d68efaa390b2b3",
+      "rule": "github-pat",
+      "description": "Uncovered a GitHub Personal Access Token, potentially leading to unauthorized repository access and sensitive content exposure.",
+      "severity": "high",
+      "preview": "ghp_… (40)",
+      "path": "config/app.env",
+      "line": 1,
+      "blob": "5877e0a6ff9a6cc8a68ce9dc29bc31409f4dd395",
+      "commit": "63e77ecd722a21b8aad0d6cd513d2bd1984dc4ca",
+      "author_name": "Sam Example",
+      "author_email": "sam@example.com",
+      "committed_at": "2026-11-14T10:05:00Z"
+    }
+  ],
+  "stats": {
+    "blobs_listed": 1,
+    "blobs_scanned": 1,
+    "blobs_cached": 0,
+    "skipped_path": 0,
+    "skipped_size": 0,
+    "skipped_binary": 0,
+    "capped": 0,
+    "prefilter_hits": 1,
+    "bytes_scanned": 72,
+    "duration_ns": 8793222
+  },
+  "summary": {
+    "findings": 1,
+    "secrets": 1,
+    "by_severity": {
+      "high": 1
+    },
+    "by_rule": [
+      {
+        "name": "github-pat",
+        "count": 1
+      }
+    ],
+    "gaps": 0
+  }
+}<!-- /example:json --></code></pre>
+    </div>
+    <div class="tabpanel" role="tabpanel" id="pane-summary" aria-labelledby="tab-summary" tabindex="0" hidden>
+      <p class="pane-cmd"><code>terces scan history --git-dir acme-payments --summary</code> · also in Markdown and HTML.</p>
+      <pre><code><!-- example:summary -->Summary: 5 findings, 5 different secrets.
+  Severity: 1 critical, 3 high, 1 medium, 0 low.
+  Top rules:
+    aws-access-key-id      1
+    aws-secret-access-key  1
+    generic-api-key        1
+    github-pat             1
+    slack-bot-token        1<!-- /example:summary --></code></pre>
+    </div>
+  </div>
+</section>
+
+<section class="never wrap" aria-labelledby="never-title">
+  <div class="section-head">
+    <h2 id="never-title">What terces never does</h2>
+    <p>The scanner holds a mirror of every repository and knows where every secret is. These rules keep it from becoming a new leak.</p>
+  </div>
+  <ul class="never-list">
+    <li><strong>It never stores, prints or logs a secret.</strong> The store, the reports, the logs and the alerts hold a fingerprint and a preview such as <code>ghp_… (40)</code>.</li>
+    <li><strong>It never tests whether a key is live.</strong> A test sends the secret to a third party. Treat each finding as live until a person checks it.</li>
+    <li><strong>It never puts a token in a URL or an argument.</strong> git gets the installation token as an HTTP header in its environment, never in <code>.git/config</code> or in <code>ps</code>.</li>
+    <li><strong>It never trusts repository content.</strong> A file name with a terminal escape, a path with invalid UTF-8 or a 5 MB minified line cannot break the output, the store or the scan time.</li>
+    <li><strong>It never passes a check without a scan.</strong> When the scan fails, the required check fails too.</li>
+    <li><strong>It never opens a GitHub issue for a finding.</strong> Everyone with access to a repository can read its issues.</li>
+  </ul>
+</section>
+
+<section id="quick-start" class="quick wrap" aria-labelledby="quick-title">
+  <div class="section-head">
+    <h2 id="quick-title">Quick start</h2>
+    <p>You need Go 1.25 or later and git. Local scans need no GitHub App and no database. The exit code is <code>0</code> for no findings, <code>1</code> for findings and <code>2</code> for an error.</p>
+  </div>
+  <ol class="quick-steps">
+    <li>
+      <h3>Build the binary</h3>
+      <div class="cmd" data-copy><code><span class="prompt" aria-hidden="true">$ </span>git clone https://github.com/bjarneo/terces &amp;&amp; cd terces &amp;&amp; make build</code><button type="button" class="copy" aria-label="Copy the command"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2.5"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg></button></div>
+    </li>
+    <li>
+      <h3>Scan a directory</h3>
+      <div class="cmd" data-copy><code><span class="prompt" aria-hidden="true">$ </span>./bin/terces scan path ~/src/my-service</code><button type="button" class="copy" aria-label="Copy the command"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2.5"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg></button></div>
+    </li>
+    <li>
+      <h3>Scan the full history and get a report</h3>
+      <div class="cmd" data-copy><code><span class="prompt" aria-hidden="true">$ </span>git clone --mirror https://github.com/my-org/my-repo.git &amp;&amp; ./bin/terces scan history --git-dir my-repo.git --format html &gt; report.html</code><button type="button" class="copy" aria-label="Copy the command"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2.5"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg></button></div>
+    </li>
+  </ol>
+  <div class="next">
+    <a class="next-link" href="https://github.com/bjarneo/terces/blob/main/docs/server-setup.md">
+      <strong>Run the server for your orgs <svg class="next-arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></strong>
+      <span>Create a GitHub App, start <code>terces serve</code> and require the <code>terces</code> check. 7 steps.</span>
+    </a>
+    <a class="next-link" href="https://github.com/bjarneo/terces/blob/main/docs/pre-commit.md">
+      <strong>Block secrets before a commit <svg class="next-arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></strong>
+      <span>Install the pre-commit hook on developer machines.</span>
+    </a>
+    <a class="next-link" href="https://github.com/bjarneo/terces/blob/main/docs/local-scans.md#audit-an-account-or-an-org">
+      <strong>Audit a full org today <svg class="next-arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></strong>
+      <span>Mirror each repository with <code>gh</code> and scan it. No server needed.</span>
+    </a>
+  </div>
+</section>
+
+<section class="numbers wrap" aria-labelledby="numbers-title">
+  <div class="section-head">
+    <h2 id="numbers-title">Measured, not claimed</h2>
+    <p>One laptop with 16 CPU threads. Each blob gets one read, and the cache shares results across repositories, forks and orgs.</p>
+  </div>
+  <div class="table-wrap">
+    <table class="bench">
+      <thead><tr><th scope="col">Target</th><th scope="col">Commits</th><th scope="col">Blobs</th><th scope="col">Size</th><th scope="col">Findings</th><th scope="col">Time</th></tr></thead>
+      <tbody>
+        <tr><th scope="row">gitleaks repository, full history</th><td>4,026</td><td>10,306</td><td>46 MB</td><td>6,287</td><td>3.2 s</td></tr>
+        <tr><th scope="row">terces repository, <code>scan path .</code></th><td>–</td><td>92</td><td>0.4 MB</td><td>0</td><td>33 ms</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+</main>
+
+<footer class="foot">
+  <div class="wrap foot-row">
+    <p><span class="mark-word">terces</span> is <em>secret</em> spelled backward. MIT license.</p>
+    <p class="muted">The examples on this page come from a synthetic repository with fake tokens. <code>scripts/site-examples.sh</code> makes them again.</p>
+    <nav aria-label="Footer">
+      <a href="https://github.com/bjarneo/terces">Source</a>
+      <a href="https://github.com/bjarneo/terces/tree/main/docs">Docs</a>
+      <a href="https://github.com/bjarneo/terces/blob/main/docs/security.md">Security</a>
+      <a href="example/report.html">Example report</a>
+    </nav>
+  </div>
+</footer>
+</body>
+</html>

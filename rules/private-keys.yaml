@@ -1,0 +1,10 @@
+# Private keys.
+
+- id: generic-private-key
+  description: Private key in PEM or OpenSSH format
+  keywords: ["-----BEGIN"]
+  # The match includes the key body. Each key then gets its own
+  # fingerprint. A regex for the header only gives all keys the same
+  # fingerprint.
+  regex: '-----BEGIN (?:RSA |EC |OPENSSH |DSA |PGP |ENCRYPTED )?PRIVATE KEY(?: BLOCK)?-----[\s\S-]{64,}?-----END (?:RSA |EC |OPENSSH |DSA |PGP |ENCRYPTED )?PRIVATE KEY(?: BLOCK)?-----'
+  severity: critical

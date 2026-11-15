@@ -1,0 +1,24 @@
+#!/bin/sh
+# terces pre-commit hook.
+#
+# To use it in one repository, run:
+#   git config core.hooksPath /path/to/terces/hooks
+#
+# The hook blocks the commit when the staged changes add a secret, and when
+# terces cannot run. To skip the hook for one commit after you
+# check a false positive, run: git commit --no-verify
+
+if ! command -v terces >/dev/null 2>&1; then
+	echo "terces is not installed. Commit blocked." >&2
+	echo "Install it with: go install ./cmd/terces" >&2
+	exit 1
+fi
+
+terces scan --staged
+status=$?
+case $status in
+0) exit 0 ;;
+1) echo "Secret detected. Commit blocked." >&2 ;;
+*) echo "terces failed with exit code $status. Commit blocked." >&2 ;;
+esac
+exit 1

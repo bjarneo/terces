@@ -1,0 +1,20 @@
+# Hooks for https://pre-commit.com
+#
+# terces builds the binary from this repository.
+# terces-system uses a terces binary on the PATH.
+
+- id: terces
+  name: terces
+  description: Block commits that add secrets.
+  entry: terces scan --staged
+  language: golang
+  pass_filenames: false
+  stages: [pre-commit]
+
+- id: terces-system
+  name: terces
+  description: Block commits that add secrets. Uses the installed binary.
+  entry: terces scan --staged
+  language: system
+  pass_filenames: false
+  stages: [pre-commit]

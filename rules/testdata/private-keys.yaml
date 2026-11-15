@@ -1,0 +1,25 @@
+- rule: generic-private-key
+  positive:
+    - |
+      {{dashes}}BEGIN RSA PRIVATE KEY{{dashes}}
+      {{rand:A-Za-z0-9+/:64}}
+      {{rand:A-Za-z0-9+/:64}}
+      {{dashes}}END RSA PRIVATE KEY{{dashes}}
+    - |
+      key = """{{dashes}}BEGIN OPENSSH PRIVATE KEY{{dashes}}
+      {{rand:A-Za-z0-9+/:70}}
+      {{dashes}}END OPENSSH PRIVATE KEY{{dashes}}"""
+    - |
+      {{dashes}}BEGIN PRIVATE KEY{{dashes}}
+      {{rand:A-Za-z0-9+/:64}}
+      {{rand:A-Za-z0-9+/:64}}
+      {{dashes}}END PRIVATE KEY{{dashes}}
+  negative:
+    # A header without a body is documentation, not a key.
+    - "Paste the key that starts with {{dashes}}BEGIN RSA PRIVATE KEY{{dashes}} here."
+    # Public keys are not secrets.
+    - |
+      {{dashes}}BEGIN PUBLIC KEY{{dashes}}
+      {{rand:A-Za-z0-9+/:64}}
+      {{rand:A-Za-z0-9+/:64}}
+      {{dashes}}END PUBLIC KEY{{dashes}}

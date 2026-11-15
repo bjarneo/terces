@@ -1,0 +1,48 @@
+# systemd unit for `terces serve`.
+#
+# Put the secrets in files that only root can read. systemd copies them to
+# a private credentials directory for the service. The service user cannot
+# read the original files.
+
+[Unit]
+Description=terces webhook service
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+User=terces
+Group=terces
+ExecStart=/usr/local/bin/terces serve
+Restart=on-failure
+RestartSec=5
+
+EnvironmentFile=/etc/terces/env
+LoadCredential=hmac-key:/etc/terces/hmac-key
+LoadCredential=github-app-key:/etc/terces/github-app.pem
+LoadCredential=webhook-secret:/etc/terces/webhook-secret
+LoadCredential=slack-webhook-url:/etc/terces/slack-webhook-url
+Environment=TERCES_HMAC_KEY_FILE=%d/hmac-key
+Environment=TERCES_GITHUB_APP_KEY_FILE=%d/github-app-key
+Environment=TERCES_WEBHOOK_SECRET_FILE=%d/webhook-secret
+Environment=TERCES_SLACK_WEBHOOK_URL_FILE=%d/slack-webhook-url
+
+# The mirror store holds every repository. Only the service can read it.
+UMask=0077
+ReadWritePaths=/data/mirrors
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
+PrivateDevices=yes
+NoNewPrivileges=yes
+CapabilityBoundingSet=
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectControlGroups=yes
+RestrictNamespaces=yes
+LockPersonality=yes
+MemoryDenyWriteExecute=yes
+SystemCallArchitectures=native
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,31 @@
+# Spot checks for rules imported from gitleaks.
+
+- rule: github-pat
+  positive:
+    - "GITHUB_TOKEN=ghp_{{rand:A-Za-z0-9:36}}"
+  negative:
+    - "GITHUB_TOKEN=ghp_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+
+- rule: gcp-api-key
+  positive:
+    - 'api_key: "AIza{{rand:A-Za-z0-9:35}}"'
+  negative:
+    - 'api_key: "AIza{{rand:a:35}}"'
+
+- rule: npm-access-token
+  positive:
+    - "//registry.npmjs.org/:_authToken=npm_{{rand:a-z0-9:36}}"
+
+- rule: slack-bot-token
+  positive:
+    - "SLACK_TOKEN=xoxb-{{rand:0-9:12}}-{{rand:0-9:12}}-{{rand:A-Za-z0-9:24}}"
+
+- rule: generic-api-key
+  positive:
+    # The rule drops a secret that contains one of 1446 stopwords, such as
+    # "vpn" or "html", and below an entropy of 3.5. This charset and length
+    # avoid both, so the test is stable.
+    - 'api_secret = "{{rand:0-9BCDFGJKNRSWZbcdfgjknrswz:40}}"'
+  negative:
+    - 'api_version = "2024-01-01"'
+    - "password = ${DB_PASSWORD}"

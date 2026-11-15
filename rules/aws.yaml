@@ -1,0 +1,21 @@
+# AWS credentials.
+
+- id: aws-access-key-id
+  description: AWS access key ID
+  keywords: [AKIA, ASIA, ABIA, ACCA, A3T]
+  # AWS key IDs use the base32 alphabet A-Z and 2-7.
+  regex: '\b((?:A3T[A-Z0-9]|AKIA|ASIA|ABIA|ACCA)[A-Z2-7]{16})\b'
+  secret_group: 1
+  entropy_min: 3.0
+  severity: high
+
+- id: aws-secret-access-key
+  description: AWS secret access key
+  # The regex needs "aws" before "secret". The keyword "aws" is therefore
+  # a safe prefilter.
+  keywords: [aws]
+  regex: '(?i)aws.{0,20}secret.{0,20}[=:]\s*["'']?([A-Za-z0-9/+=]{40})'
+  secret_group: 1
+  entropy_min: 4.0
+  pair_with: aws-access-key-id
+  severity: critical

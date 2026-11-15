@@ -1,0 +1,36 @@
+- rule: aws-access-key-id
+  positive:
+    - "aws_access_key_id = AKIA{{rand:A-Z2-7:16}}"
+    - 'export AWS_ACCESS_KEY_ID="ASIA{{rand:A-Z2-7:16}}"'
+    - "key: ABIA{{rand:A-Z2-7:16}}"
+  negative:
+    # The documented example key is on the global allowlist.
+    - "aws_access_key_id = AKIAIOSFODNN7EXAMPLE"
+    # No word boundary before the prefix.
+    - "XAKIA{{rand:A-Z2-7:16}}"
+    # Lowercase characters are not in the alphabet.
+    - "AKIA{{rand:a-z:16}}"
+    # Low entropy.
+    - "AKIAAAAAAAAAAAAAAAAA"
+    # Placeholder.
+    - "AKIAXXXXXXXXXXXXXXXX"
+
+- rule: aws-secret-access-key
+  positive:
+    - |
+      aws_access_key_id = AKIA{{rand:A-Z2-7:16}}
+      aws_secret_access_key = {{rand:A-Za-z0-9/+:40}}
+    - |
+      AWS_ACCESS_KEY_ID: ASIA{{rand:A-Z2-7:16}}
+      AWS_SECRET_ACCESS_KEY: "{{rand:A-Za-z0-9/+:40}}"
+  negative:
+    # Without an access key ID in the same blob, the rule does not report.
+    - "aws_secret_access_key = {{rand:A-Za-z0-9/+:40}}"
+    # The documented example secret is on the global allowlist.
+    - |
+      aws_access_key_id = AKIA{{rand:A-Z2-7:16}}
+      aws_secret_access_key = wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
+    # Low entropy.
+    - |
+      aws_access_key_id = AKIA{{rand:A-Z2-7:16}}
+      aws_secret_access_key = abababababababababababababababababababab
