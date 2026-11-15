@@ -1,11 +1,9 @@
 /bin/
+/dist/
 *.test
 *.out
 
-# Design review captures and temporary files.
-.impeccable/review/
-.impeccable/mocks/
-.impeccable/brief-body.md
-.impeccable/surface-round.json
-.impeccable/questions/
-/dist/
+# Design tool context. It stays on the local machine.
+/PRODUCT.md
+/DESIGN.md
+/.impeccable/
