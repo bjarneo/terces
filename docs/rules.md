@@ -154,7 +154,15 @@ make rules GITLEAKS_TOML=gitleaks.toml
 make build
 ```
 
-The converter leaves out `aws-access-token` and `private-key`, because `aws.yaml` and `private-keys.yaml` cover them. It skips rules that match file paths only. It sets the severity `critical` for private keys, `medium` for generic rules and `high` for all others. The gitleaks license is in `rules/THIRD_PARTY.md`.
+`make rules` runs `terces rules import-gitleaks`. To convert a config into a different file, run the command directly:
+
+```bash
+terces rules import-gitleaks gitleaks.toml --exclude aws-access-token,private-key -o rules/gitleaks.yaml
+```
+
+`--exclude` takes a comma-separated list of rule IDs. Without `-o`, the command writes the rules to stdout.
+
+The `make rules` target leaves out `aws-access-token` and `private-key`, because `aws.yaml` and `private-keys.yaml` cover them. It skips rules that match file paths only. It sets the severity `critical` for private keys, `medium` for generic rules and `high` for all others. The gitleaks license is in `rules/THIRD_PARTY.md`.
 
 ## Add a rule for an internal token
 

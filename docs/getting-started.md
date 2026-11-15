@@ -59,6 +59,16 @@ make build
 
 The binary is `bin/terces`. It contains the built-in rules. To put it on your `PATH`, run `go install ./cmd/terces`.
 
+## Turn on shell completion
+
+To complete commands and flags with the Tab key, install the completion script for your shell. For bash, run:
+
+```bash
+terces completion bash > ~/.local/share/bash-completion/completions/terces
+```
+
+The bash script needs the `bash-completion` package. For zsh, fish and PowerShell, run `terces completion --help`.
+
 ## Scan a directory
 
 ```bash

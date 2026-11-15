@@ -51,6 +51,8 @@ These settings apply to `terces serve`.
 | `scan repo`, `scan org` | `--full` | Scan the full history, not only the commits after the last scan. |
 | `scan` | `--format`, `--json`, `--summary` | See [Output formats](output-formats.md). |
 | `scan range`, `scan history` | `--git-dir` | The repository to scan. The default is the current directory. |
+| `rules import-gitleaks` | `--exclude` | Rule IDs to leave out, separated by commas. |
+| `rules import-gitleaks` | `-o`, `--output` | Output file. The default is stdout. |
 
 ## Files
 
