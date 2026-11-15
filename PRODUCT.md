@@ -46,7 +46,7 @@ terces finds secrets in git repositories. It scans the full history of every rep
 ## Brand Commitments
 
 - Name: `terces`, always lowercase. It is "secret" spelled backward.
-- Logo: "Terces Logo 2b" from the user's design project. The files are in `site/assets/brand/`.
+- Logo: "Terces Logo 1a" from the user's design project, with the highlighted code line in the site green. The files are in `site/assets/brand/`.
 - Repository: `https://github.com/bjarneo/terces`. The user approved this URL for the site links.
 - License: MIT. The copyright holder in `LICENSE` is a neutral placeholder.
 - Voice: ASD-STE100 Simplified Technical English in a developer-relations voice. Outcome first, short sentences, active voice, no hype, no superlatives, no filler, runnable examples.

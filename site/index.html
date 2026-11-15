@@ -19,12 +19,8 @@
   <div class="wrap top-row">
     <a class="mark" href="./" aria-label="terces home">
       <picture>
-        <source srcset="assets/brand/terces-icon-dark.svg" media="(prefers-color-scheme: dark)">
-        <img class="mark-icon" src="assets/brand/terces-icon.svg" width="30" height="30" alt="">
-      </picture>
-      <picture>
-        <source srcset="assets/brand/terces-wordmark-dark.svg" media="(prefers-color-scheme: dark)">
-        <img class="mark-word" src="assets/brand/terces-wordmark.svg" width="72" height="24" alt="">
+        <source srcset="assets/brand/terces-logo-dark.svg" media="(prefers-color-scheme: dark)">
+        <img class="mark-logo" src="assets/brand/terces-logo.svg" width="130" height="30" alt="">
       </picture>
     </a>
     <nav aria-label="Main">
@@ -126,13 +122,13 @@
         <figure class="term">
           <figcaption><span class="prompt">$</span> terces scan range main..feature/deploy-config</figcaption>
           <pre><code><!-- example:range -->SEVERITY  RULE        PREVIEW     LOCATION          COMMIT        FINGERPRINT
-high      github-pat  ghp_… (40)  config/app.env:1  5804b476928e  74ed6f8aae66
+high      github-pat  ghp_… (40)  config/app.env:1  6cc2a9819ac7  e38e6272e855
 
 Summary: 1 finding, 1 different secret.
   Severity: 0 critical, 1 high, 0 medium, 0 low.
   Top rules:
     github-pat  1
-1 finding. 1 blob listed, 1 scanned, 0 cached, 0 skipped (path 0, size 0, binary 0), 43 blobs/s, prefilter hit rate 100.0%, 23ms<!-- /example:range --></code></pre>
+1 finding. 1 blob listed, 1 scanned, 0 cached, 0 skipped (path 0, size 0, binary 0), 45 blobs/s, prefilter hit rate 100.0%, 22ms<!-- /example:range --></code></pre>
         </figure>
         <p class="aside">Only new secrets fail the check. A secret that already exists on the base branch is not new. The check reads <code>.terces.yaml</code> from the base commit, so a pull request cannot ignore its own secret.</p>
       </article>
@@ -166,7 +162,7 @@ Summary: 1 finding, 1 different secret.
           <figure class="panel">
             <figcaption class="panel-head"><span class="file">secrets</span><span class="muted">1 row</span></figcaption>
             <dl class="row-dl">
-              <dt>fingerprint</dt><dd><code class="fp"><!-- example:fp-full -->74ed6f8aae66c2e51be729a61a70694351a3bd9bf649e26543dadcc81fda36e8<!-- /example:fp-full --></code></dd>
+              <dt>fingerprint</dt><dd><code class="fp"><!-- example:fp-full -->e38e6272e8558741a52ab2306b4456535db78c286c47166148cd7a43921f1431<!-- /example:fp-full --></code></dd>
               <dt>rule_id</dt><dd><code>github-pat</code></dd>
               <dt>preview</dt><dd><code>ghp_… (40)</code></dd>
               <dt>state</dt><dd><code>open</code></dd>
@@ -191,11 +187,11 @@ Summary: 1 finding, 1 different secret.
         <figure class="term">
           <figcaption><span class="prompt">$</span> terces scan history --git-dir acme-payments</figcaption>
           <pre><code><!-- example:history -->SEVERITY  RULE                   PREVIEW     LOCATION              COMMIT        FINGERPRINT
-critical  aws-secret-access-key  b6tK… (40)  deploy/credentials:3  753099a864ea  19135f49abed
-high      github-pat             ghp_… (40)  config/app.env:1      5804b476928e  74ed6f8aae66
-high      slack-bot-token        xoxb… (55)  config/slack.env:1    d4adf0aa558c  c2c38b94feda
-high      aws-access-key-id      AKIA… (20)  deploy/credentials:2  753099a864ea  b8a876d57193
-medium    generic-api-key        j7RG… (40)  src/client.js:3       692f27e9a2bf  e57cfac74baa
+critical  aws-secret-access-key  xPoJ… (40)  deploy/credentials:3  4620089519d3  30d5325e3d9e
+high      github-pat             ghp_… (40)  config/app.env:1      6cc2a9819ac7  e38e6272e855
+high      slack-bot-token        xoxb… (55)  config/slack.env:1    01f1e5b5f4ab  29d9a9152009
+high      aws-access-key-id      AKIA… (20)  deploy/credentials:2  4620089519d3  3a7cdbf8b3d0
+medium    generic-api-key        14wF… (40)  src/client.js:3       9dc3d94d0bc4  260e5ce67849
 
 Summary: 5 findings, 5 different secrets.
   Severity: 1 critical, 3 high, 1 medium, 0 low.
@@ -205,7 +201,7 @@ Summary: 5 findings, 5 different secrets.
     generic-api-key        1
     github-pat             1
     slack-bot-token        1
-5 findings. 6 blobs listed, 6 scanned, 0 cached, 0 skipped (path 0, size 0, binary 0), 553 blobs/s, prefilter hit rate 83.3%, 11ms<!-- /example:history --></code></pre>
+5 findings. 6 blobs listed, 6 scanned, 0 cached, 0 skipped (path 0, size 0, binary 0), 635 blobs/s, prefilter hit rate 83.3%, 9ms<!-- /example:history --></code></pre>
         </figure>
         <figure class="shot">
           <a href="example/report.html" aria-label="Open the live example report">
@@ -224,8 +220,8 @@ Summary: 5 findings, 5 different secrets.
         <h3>You revoke it and close it</h3>
         <p>Revoke the token at its provider first. Then resolve the finding. The pull request check and the Slack alerts stop for that secret, and the audit log records who resolved it and with which database role.</p>
         <figure class="term">
-          <figcaption><span class="prompt">$</span> terces findings resolve <!-- example:fp-short -->74ed6f8aae66<!-- /example:fp-short --> --state revoked --note "rotated in GitHub"</figcaption>
-          <pre><code><!-- example:resolve -->74ed6f8aae66 is now revoked<!-- /example:resolve --></code></pre>
+          <figcaption><span class="prompt">$</span> terces findings resolve <!-- example:fp-short -->e38e6272e855<!-- /example:fp-short --> --state revoked --note "rotated in GitHub"</figcaption>
+          <pre><code><!-- example:resolve -->e38e6272e855 is now revoked<!-- /example:resolve --></code></pre>
         </figure>
       </article>
     </div>
@@ -258,9 +254,9 @@ Each finding is a secret that can be live. Revoke it first, then remove it from 
 
 | Severity | Rule | Preview | Location | Commit | Fingerprint |
 |---|---|---|---|---|---|
-| high | `github-pat` | `ghp_… (40)` | `config/app.env:1` | `5804b476928e` | `74ed6f8aae66` |
+| high | `github-pat` | `ghp_… (40)` | `config/app.env:1` | `6cc2a9819ac7` | `e38e6272e855` |
 
-Scan: 1 blob listed, 1 scanned, 0 cached, 0 skipped (path 0, size 0, binary 0), 47 blobs/s, prefilter hit rate 100.0%, 21ms<!-- /example:markdown --></code></pre>
+Scan: 1 blob listed, 1 scanned, 0 cached, 0 skipped (path 0, size 0, binary 0), 50 blobs/s, prefilter hit rate 100.0%, 20ms<!-- /example:markdown --></code></pre>
     </div>
     <div class="tabpanel" role="tabpanel" id="pane-sarif" aria-labelledby="tab-sarif" tabindex="0" hidden>
       <p class="pane-cmd"><code>terces scan path . --format sarif</code> · SARIF 2.1.0 for GitHub code scanning, with <code>security-severity</code> scores.</p>
@@ -272,7 +268,7 @@ Scan: 1 blob listed, 1 scanned, 0 cached, 0 skipped (path 0, size 0, binary 0), 
       "tool": {
         "driver": {
           "name": "terces",
-          "version": "a319dab-dirty",
+          "version": "v0.1.0-1-g5f79a56-dirty",
           "rules": [
             {
               "id": "github-pat",
@@ -318,10 +314,10 @@ Scan: 1 blob listed, 1 scanned, 0 cached, 0 skipped (path 0, size 0, binary 0), 
             }
           ],
           "partialFingerprints": {
-            "tercesFingerprint/v1": "74ed6f8aae66c2e51be729a61a70694351a3bd9bf649e26543dadcc81fda36e8"
+            "tercesFingerprint/v1": "e38e6272e8558741a52ab2306b4456535db78c286c47166148cd7a43921f1431"
           },
           "properties": {
-            "commit": "5804b476928e50400ea57ecbb108ae8a16eefb63"
+            "commit": "6cc2a9819ac7ef5b29cbf8c62ac9db5be883ed74"
           }
         }
       ]
@@ -334,15 +330,15 @@ Scan: 1 blob listed, 1 scanned, 0 cached, 0 skipped (path 0, size 0, binary 0), 
       <pre><code><!-- example:json -->{
   "findings": [
     {
-      "fingerprint": "74ed6f8aae66c2e51be729a61a70694351a3bd9bf649e26543dadcc81fda36e8",
+      "fingerprint": "e38e6272e8558741a52ab2306b4456535db78c286c47166148cd7a43921f1431",
       "rule": "github-pat",
       "description": "Uncovered a GitHub Personal Access Token, potentially leading to unauthorized repository access and sensitive content exposure.",
       "severity": "high",
       "preview": "ghp_… (40)",
       "path": "config/app.env",
       "line": 1,
-      "blob": "90ca8254b7b64fdd2e246750d85b9dcc6ca48fdf",
-      "commit": "5804b476928e50400ea57ecbb108ae8a16eefb63",
+      "blob": "38bfa589cc03113d409fe3b90fce21d330167df8",
+      "commit": "6cc2a9819ac7ef5b29cbf8c62ac9db5be883ed74",
       "author_name": "Sam Example",
       "author_email": "sam@example.com",
       "committed_at": "2026-11-14T10:05:00Z"
@@ -358,7 +354,7 @@ Scan: 1 blob listed, 1 scanned, 0 cached, 0 skipped (path 0, size 0, binary 0), 
     "capped": 0,
     "prefilter_hits": 1,
     "bytes_scanned": 72,
-    "duration_ns": 22460646
+    "duration_ns": 21997904
   },
   "summary": {
     "findings": 1,
@@ -464,7 +460,7 @@ Scan: 1 blob listed, 1 scanned, 0 cached, 0 skipped (path 0, size 0, binary 0), 
     <p class="foot-brand">
       <picture>
         <source srcset="assets/brand/terces-wordmark-dark.svg" media="(prefers-color-scheme: dark)">
-        <img src="assets/brand/terces-wordmark.svg" width="60" height="20" alt="terces">
+        <img src="assets/brand/terces-wordmark.svg" width="66" height="14" alt="terces">
       </picture>
       is <em>secret</em> spelled backward. MIT license.
     </p>

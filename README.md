@@ -1,7 +1,7 @@
 <p align="center">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="site/assets/brand/terces-wordmark-dark.svg">
-    <img alt="terces" src="site/assets/brand/terces-wordmark.svg" width="300">
+    <source media="(prefers-color-scheme: dark)" srcset="site/assets/brand/terces-logo-dark.svg">
+    <img alt="terces" src="site/assets/brand/terces-logo.svg" width="320">
   </picture>
 </p>
 

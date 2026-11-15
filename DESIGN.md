@@ -370,17 +370,19 @@ All transitions use the ease `cubic-bezier(0.16, 1, 0.3, 1)`. Hover color change
 
 ## Logo
 
-The logo is "Terces Logo 2b". It is set in Schibsted Grotesk ExtraBold, and the glyphs ship as outlines, so no font file loads.
+The logo is "Terces Logo 1a": a dark tile with four code lines, and the wordmark in Martian Mono Medium. The wordmark ships as outlines, so no font file loads.
 
-- The top slice is ink and ends at 55% of the line box.
-- The bottom slice is coral, starts at 56%, and moves right by `0.06em`.
-- The icon is a `t` on a tile with `0.2em` corners. Its bottom slice starts at 57% and moves right by `0.07em`. At 16px, the `t` grows to `0.9em` and the slice moves by `0.1em`.
+- The tile has `0.22em` corners and `0.2em` side padding.
+- The four lines are `0.08em` high with `0.075em` gaps, and the group is centered on the tile.
+- The lines are `0.34em`, `0.4em`, `0.5em` and `0.22em` wide. The second and third lines start `0.1em` further in.
+- The third line is the highlighted line. It uses the site green.
+- In the lockup, a `120` icon sits `36` from a `92` wordmark with `-0.04em` tracking.
 
 | Role | Light | Dark |
 |---|---|---|
-| Ink | `#161513` | `#F3F1EC` |
-| Coral | `#ed4428` | `#f84f33` |
-| Icon tile | `#161513` | `#2B2A26` |
-| Icon `t` | `#FAF9F6` | `#F3F1EC` |
+| Tile | `#161513` | `#2B2A26` |
+| Code lines | `#5F5C55` | `#77746C` |
+| Highlighted line | `#7fb7a4` | `#7fb7a4` |
+| Wordmark | `#161513` | `#F3F1EC` |
 
-Coral belongs to the logo only. The interface accent stays Ledger Green. The files are in `site/assets/brand/`, and `scripts/logo-svg.py` builds them again.
+The highlighted line uses the light site green on both tiles, because the dark site green has only 2.4:1 contrast on the tile. The files are in `site/assets/brand/`, and `scripts/logo-svg.py` builds them again.
