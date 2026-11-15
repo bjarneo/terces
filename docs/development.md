@@ -48,8 +48,8 @@ deploy/                systemd unit, database roles, example environment
 hooks/                 pre-commit hook
 docs/                  this documentation
 site/                  GitHub Pages site
-scripts/               site-examples.sh for the site examples
-.github/workflows/     Pages deployment
+scripts/               release archives and site examples
+.github/workflows/     Pages deployment and releases
 ```
 
 ## Release

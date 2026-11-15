@@ -31,4 +31,3 @@ terces finds secrets in git repositories. It scans the full history of each repo
 | [Performance](performance.md) | Read benchmark numbers and tune a large installation. |
 | [Troubleshooting](troubleshooting.md) | Fix common errors. |
 | [Development](development.md) | Run the tests and find your way in the code. |
-| [Design guide](build-guide.md) | Read the original design that this implementation follows. |

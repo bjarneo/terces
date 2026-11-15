@@ -2,8 +2,3 @@
 /dist/
 *.test
 *.out
-
-# Design tool context. It stays on the local machine.
-/PRODUCT.md
-/DESIGN.md
-/.impeccable/
