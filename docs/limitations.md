@@ -26,5 +26,6 @@ These are known limits of terces. Each item says what to do instead.
 ## Platforms
 
 - The tests run on Linux with git 2.56 and Postgres 17.
+- Releases have binaries for Linux and macOS on amd64 and arm64. The macOS binaries are not tested, and they are not signed.
+- Windows has no release binary. The code builds for Windows from source, but Windows is not tested.
 - GitHub Enterprise Server is not tested. The API and git URLs are settings, so it can work.
-- The binary builds for macOS and Windows, but these platforms are not tested.

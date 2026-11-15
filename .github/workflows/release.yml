@@ -1,0 +1,43 @@
+# Publishes a GitHub release with macOS and Linux binaries for each tag
+# that starts with v, such as v0.1.0.
+name: Release
+
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+      - name: Test
+        run: go test ./...
+      - name: Build
+        run: scripts/release.sh "$GITHUB_REF_NAME"
+      - name: Publish
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          cat > notes.md <<NOTES
+          Binaries for macOS and Linux on amd64 and arm64. Each archive holds \`terces\`, \`LICENSE\` and \`README.md\`.
+
+          Install on macOS or Linux:
+
+          \`\`\`bash
+          os=\$(uname -s | tr '[:upper:]' '[:lower:]')
+          arch=\$(uname -m | sed 's/x86_64/amd64/; s/aarch64/arm64/')
+          curl -sSfL "https://github.com/${GITHUB_REPOSITORY}/releases/download/${GITHUB_REF_NAME}/terces_\${os}_\${arch}.tar.gz" | tar -xz terces
+          ./terces --version
+          \`\`\`
+
+          Check the archive against \`SHA256SUMS\` before you run it. See [Getting started](https://github.com/${GITHUB_REPOSITORY}/blob/main/docs/getting-started.md).
+          NOTES
+          gh release create "$GITHUB_REF_NAME" dist/*.tar.gz dist/SHA256SUMS \
+            --title "$GITHUB_REF_NAME" --notes-file notes.md

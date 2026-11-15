@@ -2,7 +2,7 @@ VERSION ?= $(shell git describe --tags --always --dirty 2>/dev/null || echo dev)
 BIN     := bin/terces
 TEST_DB := postgres://postgres:test@127.0.0.1:55432/postgres?sslmode=disable
 
-.PHONY: build test test-db db-up db-down vet rules site clean
+.PHONY: build test test-db db-up db-down vet rules site dist clean
 
 ## build: build the binary into bin/. Rebuild after a change to rules/*.yaml.
 build:
@@ -38,5 +38,9 @@ rules:
 site: build
 	scripts/site-examples.sh
 
+## dist: build the release archives for macOS and Linux into dist/.
+dist:
+	scripts/release.sh $(VERSION)
+
 clean:
-	rm -rf bin
+	rm -rf bin dist

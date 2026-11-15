@@ -20,6 +20,9 @@
   --medium: #b08900;
   --low: #5c7080;
   --shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+  --logo-tile: #161513;
+  --logo-paper: #FAF9F6;
+  --logo-coral: #ed4428;
 }
 @media (prefers-color-scheme: dark) {
   :root {
@@ -35,6 +38,9 @@
     --medium: #ffd43b;
     --low: #a5b4c3;
     --shadow: none;
+    --logo-tile: #2B2A26;
+    --logo-paper: #F3F1EC;
+    --logo-coral: #f84f33;
   }
   .sev.sev { color: #141413; }
 }
@@ -47,6 +53,11 @@ body {
 }
 main { max-width: 1280px; margin: 0 auto; padding: 32px 16px 64px; }
 header h1 { margin: 0; font-size: 26px; letter-spacing: -0.01em; }
+.title-row { display: flex; align-items: center; gap: 12px; }
+.brand { width: 34px; height: 34px; flex: none; }
+.logo-tile { fill: var(--logo-tile); }
+.logo-paper { fill: var(--logo-paper); }
+.logo-coral { fill: var(--logo-coral); }
 header p { margin: 4px 0 0; color: var(--muted); }
 .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin: 24px 0; }
 .card {
@@ -108,7 +119,10 @@ footer { margin-top: 40px; color: var(--muted); font-size: 13px; }
 <body>
 <main>
   <header>
-    <h1 id="title"></h1>
+    <div class="title-row">
+      <svg class="brand" viewBox="0 0 100 100" aria-hidden="true"><defs><clipPath id="logo-sq"><rect width="100" height="100" rx="20"/></clipPath><clipPath id="logo-top"><rect width="100" height="55"/></clipPath><clipPath id="logo-bottom"><rect y="57" width="100" height="43"/></clipPath></defs><g clip-path="url(#logo-sq)"><rect class="logo-tile" width="100" height="100"/><g clip-path="url(#logo-top)"><path class="logo-paper" transform="translate(32.95 7)" d="M19.7 73.9Q13.7 73.9 10.8 71.2Q7.8 68.5 7.8 63.1V39.1H1.6V28.6H7.8V19.9L22.5 16.3V28.6H30.6V39.1H22.5V61.1Q22.5 62.5 22.9 62.9Q23.3 63.4 24.6 63.4H31.5V73.9Z"/></g><g clip-path="url(#logo-bottom)"><g transform="translate(6.02 0)"><path class="logo-coral" transform="translate(32.95 7)" d="M19.7 73.9Q13.7 73.9 10.8 71.2Q7.8 68.5 7.8 63.1V39.1H1.6V28.6H7.8V19.9L22.5 16.3V28.6H30.6V39.1H22.5V61.1Q22.5 62.5 22.9 62.9Q23.3 63.4 24.6 63.4H31.5V73.9Z"/></g></g></g></svg>
+      <h1 id="title"></h1>
+    </div>
     <p id="subtitle"></p>
   </header>
   <section class="cards" id="cards"></section>

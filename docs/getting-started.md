@@ -4,23 +4,54 @@ This page takes you from source code to your first scan. You need no GitHub App 
 
 ## Requirements
 
-- Go 1.25 or later to build. The Postgres driver pgx v5.13 needs Go 1.25.
 - git 2.38 or later.
+- Go 1.25 or later, only to build from source. The Postgres driver pgx v5.13 needs Go 1.25.
 
-## Build
+## Install a release
+
+Each release has binaries for macOS and Linux on amd64 and arm64. The install script picks the archive for your machine, checks it against `SHA256SUMS` and installs it to `~/.local/bin`:
 
 ```bash
-git clone <your-terces-remote> terces
+curl -sSfL https://bjarneo.github.io/terces/install.sh | sh
+```
+
+To install to another directory, set `TERCES_INSTALL_DIR`. Read the script first if you prefer: it is `site/install.sh` in the repository.
+
+To download the archive by hand instead, run:
+
+```bash
+os=$(uname -s | tr '[:upper:]' '[:lower:]')
+arch=$(uname -m | sed 's/x86_64/amd64/; s/aarch64/arm64/')
+curl -sSfL "https://github.com/bjarneo/terces/releases/latest/download/terces_${os}_${arch}.tar.gz" | tar -xz terces
+./terces --version
+```
+
+To put it on your `PATH`, run:
+
+```bash
+sudo mv terces /usr/local/bin/
+```
+
+To check the archive before you run it, download it and `SHA256SUMS`, then compare:
+
+```bash
+curl -sSfLO "https://github.com/bjarneo/terces/releases/latest/download/terces_${os}_${arch}.tar.gz"
+curl -sSfLO https://github.com/bjarneo/terces/releases/latest/download/SHA256SUMS
+sha256sum --ignore-missing -c SHA256SUMS     # on macOS: shasum -a 256 --ignore-missing -c SHA256SUMS
+```
+
+The binaries are not signed. A curl download gets no quarantine flag on macOS. If you download the archive in a browser, remove the flag with `xattr -d com.apple.quarantine terces`.
+
+## Build from source
+
+```bash
+git clone https://github.com/bjarneo/terces
 cd terces
 make build
 ./bin/terces --version
 ```
 
-The binary is `bin/terces`. It contains the built-in rules. To put it on your `PATH`, run:
-
-```bash
-go install ./cmd/terces
-```
+The binary is `bin/terces`. It contains the built-in rules. To put it on your `PATH`, run `go install ./cmd/terces`.
 
 ## Scan a directory
 

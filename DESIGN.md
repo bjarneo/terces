@@ -367,3 +367,20 @@ All transitions use the ease `cubic-bezier(0.16, 1, 0.3, 1)`. Hover color change
 - **Don't** load external fonts, images or scripts. Both homes run under a strict Content Security Policy.
 - **Don't** use a large or dark drop shadow. The Panel lift is the only site shadow.
 - **Don't** fill a panel with a tint to make it stand out. Use the border, the shadow and the content.
+
+## Logo
+
+The logo is "Terces Logo 2b". It is set in Schibsted Grotesk ExtraBold, and the glyphs ship as outlines, so no font file loads.
+
+- The top slice is ink and ends at 55% of the line box.
+- The bottom slice is coral, starts at 56%, and moves right by `0.06em`.
+- The icon is a `t` on a tile with `0.2em` corners. Its bottom slice starts at 57% and moves right by `0.07em`. At 16px, the `t` grows to `0.9em` and the slice moves by `0.1em`.
+
+| Role | Light | Dark |
+|---|---|---|
+| Ink | `#161513` | `#F3F1EC` |
+| Coral | `#ed4428` | `#f84f33` |
+| Icon tile | `#161513` | `#2B2A26` |
+| Icon `t` | `#FAF9F6` | `#F3F1EC` |
+
+Coral belongs to the logo only. The interface accent stays Ledger Green. The files are in `site/assets/brand/`, and `scripts/logo-svg.py` builds them again.

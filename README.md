@@ -1,21 +1,37 @@
-# terces
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="site/assets/brand/terces-wordmark-dark.svg">
+    <img alt="terces" src="site/assets/brand/terces-wordmark.svg" width="300">
+  </picture>
+</p>
 
 terces finds secrets in git repositories. It scans the full history of every repository in your GitHub organizations, blocks new secrets in pull requests and keeps one deduplicated list of findings in Postgres.
 
 It never stores, prints or sends a full secret, and it never tests whether a key is live.
 
+Website: https://bjarneo.github.io/terces/
+
 ## Quick start
 
+Install the binary for macOS or Linux. The script checks the archive against `SHA256SUMS` and installs to `~/.local/bin`:
+
 ```bash
-make build
-./bin/terces scan path .
+curl -sSfL https://bjarneo.github.io/terces/install.sh | sh
+```
+
+To download an archive by hand, see [Getting started](docs/getting-started.md#install-a-release) or the [releases](https://github.com/bjarneo/terces/releases).
+
+Scan a directory:
+
+```bash
+terces scan path .
 ```
 
 Scan the full history of a repository, and get a report:
 
 ```bash
 git clone --mirror https://github.com/my-org/my-repo.git
-./bin/terces scan history --git-dir my-repo.git --format html > report.html
+terces scan history --git-dir my-repo.git --format html > report.html
 ```
 
 The exit code is `0` for no findings, `1` for findings and `2` for an error.
@@ -46,8 +62,8 @@ All pages are in [docs/](docs/README.md).
 
 ## Requirements
 
-- Go 1.25 or later to build.
 - git 2.38 or later.
+- Go 1.25 or later, only to build from source with `make build`.
 - Postgres 15 or later for the server. Local scans do not need it.
 
 ## Third-party rules

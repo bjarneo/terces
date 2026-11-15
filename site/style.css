@@ -101,9 +101,9 @@ p { text-wrap: pretty; }
 }
 .top-row { display: flex; align-items: center; justify-content: space-between; height: 64px; gap: 16px; }
 .mark { display: inline-flex; align-items: center; gap: 10px; color: var(--ink); text-decoration: none; }
-.mark-icon { width: 26px; height: 26px; fill: var(--accent); stroke: var(--accent-ink); stroke-width: 1.8; stroke-linecap: round; }
-.mark-word { font: 650 19px/1 var(--mono); letter-spacing: -0.02em; }
-.mark .mark-word { position: relative; display: inline-block; }
+.mark picture, .foot-brand picture { display: inline-flex; }
+.mark-icon { width: 30px; height: 30px; display: block; }
+.mark-word { width: auto; height: 24px; display: block; }
 .top nav { display: flex; align-items: center; gap: 4px; }
 .top nav a {
   color: var(--ink); text-decoration: none; font-size: 15px;
@@ -348,6 +348,8 @@ table { border-collapse: collapse; font-variant-numeric: tabular-nums; }
   background: var(--accent); color: var(--accent-ink); font: 700 14px/1 var(--mono);
 }
 .quick-steps h3 { font-size: 1.05rem; margin-bottom: 8px; }
+.aside-q { color: var(--muted); font-size: 15px; margin: -8px 0 32px; max-width: 80ch; }
+.aside-q code { white-space: normal; overflow-wrap: anywhere; }
 .next { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
 .next-link {
   display: grid; gap: 6px; align-content: start; padding: 18px; text-decoration: none; color: var(--muted); font-size: 15px;
@@ -369,7 +371,7 @@ table { border-collapse: collapse; font-variant-numeric: tabular-nums; }
 .foot { border-top: 1px solid var(--line); padding-block: 36px 48px; font-size: 14px; }
 .foot-row { display: grid; grid-template-columns: auto 1fr auto; gap: 18px 32px; align-items: start; }
 .foot p { margin: 0; }
-.foot .mark-word { font-size: 15px; }
+.foot-brand img { height: 18px; width: auto; vertical-align: -3px; margin-right: 2px; }
 .foot nav { display: flex; gap: 16px; flex-wrap: wrap; }
 
 /* Responsive */

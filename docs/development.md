@@ -52,6 +52,21 @@ scripts/               site-examples.sh for the site examples
 .github/workflows/     Pages deployment
 ```
 
+## Release
+
+To publish a release, push a tag that starts with `v`:
+
+```bash
+git tag v0.2.0
+git push origin v0.2.0
+```
+
+`.github/workflows/release.yml` runs the tests, runs `scripts/release.sh` and publishes the archives and `SHA256SUMS` on the release page. To build the same archives locally into `dist/`, run:
+
+```bash
+make dist VERSION=v0.2.0
+```
+
 ## Website
 
 The GitHub Pages site is in `site/`. It is static HTML, CSS and JavaScript with no external requests. `.github/workflows/pages.yml` deploys it on each push to `main` that changes `site/`.
